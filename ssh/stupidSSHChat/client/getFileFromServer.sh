@@ -4,18 +4,9 @@
 source $(dirname $0)/checkEnvVariablesAreSet.sh
 checkIfVariablesAreSet 
 
-
-# check if a new path is given
-pathToCommunicationFile=/home/user/scripts/communication
-if [ -z $1 ]
-then
-	echo "path to remote communication file not given"
-	pathToCommunicationFile=$1
-fi
-
 # display text
 while true; do	
-	scp $CHATSERVER_Uname@$CHATSERVER_ip:$pathToCommunicationFile .
+	scp $CHATSERVER_Uname@$CHATSERVER_ip:${CHATSERVER_remotePath} .
 	clear
 	cat -n communication
 	sleep 5
