@@ -7,10 +7,9 @@ while true; do
 	time=$(date +%T)
 	echo "Bitte Nachricht für Übertragung eingeben:"
 	read -e TEXT
-	ssh -T user@192.168.140.113 "echo -e '${GREEN}Philipp (SSH) ${NC} ${time}: $TEXT' >> /home/user/scripts/communication;"
+	ssh -T ${CHATSERVER_Uname}@${CHATSERVER_ip} "echo -e '${GREEN}Philipp (SSH) ${NC} ${time}: $TEXT' >> ${CHATSERVER_remotePath};"
 	echo "Transfer erfolgreich ..."
 	sleep 1
-#	scp user@192.168.140.113:/home/user/scripts/communication .
 done;
 
 
