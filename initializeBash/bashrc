@@ -1,0 +1,114 @@
+# .bashrc
+#                         _               _              
+#                        | |__   __ _ ___| |__  _ __ ___ 
+#                        | '_ \ / _` / __| '_ \| '__/ __|
+#                        | |_) | (_| \__ \ | | | | | (__ 
+#                        |_.__/ \__,_|___/_| |_|_|  \___|
+#              
+# replace your .bashrc with this file or replace parts of it.                                           
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+
+if [ -f ~/.bash_aliases ]; then
+        . ~/.bash_aliases
+fi
+
+#                                         _     
+#                                 ___ ___| |__  
+#                                / __/ __| '_ \ 
+#                                \__ \__ \ | | |
+#                                |___/___/_| |_|
+#                                               
+#
+# check if the current session is a ssh session
+SSH=NO
+if [[ $(who am i) =~ \([0-9\.]+\)$ ]]; then SSH="SSH"; else SSH="LOCAL"; fi
+
+#                                        _ _   
+#                                   __ _(_) |_ 
+#                                  / _` | | __|
+#                                 | (_| | | |_ 
+#                                  \__, |_|\__|
+#                                  |___/       
+#
+# get current branch of git repo
+function parse_git_branch() {
+	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+	if [ ! "${BRANCH}" == "" ]
+	then
+		STAT=`parse_git_dirty`
+		echo "[${BRANCH}${STAT}]"
+	else
+		echo ""
+	fi
+}
+
+# get current status of git repo
+function parse_git_dirty {
+	status=`git status 2>&1 | tee`
+	dirty=`echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?"`
+	untracked=`echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?"`
+	ahead=`echo -n "${status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?"`
+	newfile=`echo -n "${status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?"`
+	renamed=`echo -n "${status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?"`
+	deleted=`echo -n "${status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?"`
+	bits=''
+	if [ "${renamed}" == "0" ]; then
+		bits=">${bits}"
+	fi
+	if [ "${ahead}" == "0" ]; then
+		bits="*${bits}"
+	fi
+	if [ "${newfile}" == "0" ]; then
+		bits="+${bits}"
+	fi
+	if [ "${untracked}" == "0" ]; then
+		bits="?${bits}"
+	fi
+	if [ "${deleted}" == "0" ]; then
+		bits="x${bits}"
+	fi
+	if [ "${dirty}" == "0" ]; then
+		bits="!${bits}"
+	fi
+	if [ ! "${bits}" == "" ]; then
+		echo " ${bits}"
+	else
+		echo ""
+	fi
+}
+
+#                                     _                
+#                            ___ ___ | | ___  _ __ ___ 
+#                           / __/ _ \| |/ _ \| '__/ __|
+#                          | (_| (_) | | (_) | |  \__ \
+#                           \___\___/|_|\___/|_|  |___/
+#                                                      
+# Some Colors as variables set in the .bashRC
+pink="\033[35m"
+cyan="\033[36m"
+blue="\033[34m"
+green="\033[32m"
+reset="\033[0m"
+red="\e[31m"
+lightRed="\e[91m"
+yellow="\e[33m"
+
+
+#                                                      _   
+#                      _ __  _ __ ___  _ __ ___  _ __ | |_ 
+#                     | '_ \| '__/ _ \| '_ ` _ \| '_ \| __|
+#                     | |_) | | | (_) | | | | | | |_) | |_ 
+#                     | .__/|_|  \___/|_| |_| |_| .__/ \__|
+#                     |_|                       |_|        
+#
+export PS1="${green}\!${reset} $SSH ${yellow}\u${reset}@${cyan}\h${reseŧ}: ${blue}\w${reset} ${lightmagenta}\`parse_git_branch\`${reset}> ";
+
+
